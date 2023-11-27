@@ -1,46 +1,40 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-
-type Planet = {
-  id: number;
-  name: string;
-  imageName: string;
-  description: string;
-  status: string;
-  robotNumber: number;
-  teamId?: number;
-};
+import { type PlanetType } from "../../types/types.js";
+import Planet from "./Planet.vue";
 
 onMounted(async () => {
   const response = await fetch("http://localhost:5015/api/planets");
   const data = await response.json();
   planets.value = data;
+  planets.value = [
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+    ...planets.value,
+  ];
 });
 
-const planets = ref<Array<Planet>>([]);
+const planets = ref<Array<PlanetType>>([]);
 </script>
 
 <template>
-  <section class="p-2">
-    <article
+  <section
+    class="flex flex-col gap-2 p-2  w-full justify-center h-full overflow-y-scroll"
+  >
+    <button
       v-for="planet in planets"
-      class="flex justify-between items-center gap-3 border border-gray-600 border-opacity-10 rounded-sm p-4"
+      class="flex justify-evenly items-center gap-3 border border-gray-600 border-opacity-10 rounded-sm p-4"
     >
-      <div class="flex flex-col justify-center">
-        <img
-          class="w-12 h-12"
-          :src="`http://localhost:5015/static/${planet.imageName}`"
-          alt="vite.svg"
-        />
-        <h3 class="text-center text-lg font-bold">{{ planet.name }}</h3>
-      </div>
-      <div class="flex"></div>
-      <div
-        class="text-lg font-bold"
-        :class="planet.status === 'OK' ? 'text-green-400' : ''"
-      >
-        {{ planet.status }}
-      </div>
-    </article>
+      <Planet :planet="planet" />
+    </button>
   </section>
 </template>

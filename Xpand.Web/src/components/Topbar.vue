@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 
 onMounted(() => {
-  // fetch sesion, store JWT token in localStorage
+  // test sesion with stored JWT token from localStorage
   isLoggedIn.value = false;
 });
 
@@ -10,7 +10,9 @@ const isLoggedIn = ref(false);
 </script>
 
 <template>
-  <header class="bg-primary flex justify-between p-4">
+  <header
+    class="bg-primary max-w-md w-full flex items-center justify-between p-4"
+  >
     <h1 class="font-sans font-bold text-text uppercase text-xl">Xpand</h1>
     <div v-if="!isLoggedIn" class="flex gap-3">
       <button
