@@ -5,17 +5,9 @@ import Topbar from "./components/Topbar.vue";
 import { useAuthStore } from "./store/authstore";
 
 const authStore = useAuthStore();
-onMounted(() => {
-  // test sesion with stored JWT token from localStorage
-  const token = localStorage.getItem("token");
-  if (!token) {
-    authStore.setLoggedIn(false);
-    return;
-  }
-  authStore.setTokken(token);
-  authStore.checkAuth();
 
-  console.log(authStore.isLoggedIn);
+onMounted(async () => {
+  await authStore.checkAuth();
 });
 </script>
 

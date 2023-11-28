@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed } from "vue";
 import { useAuthStore } from "../store/authstore";
 
 const authStore = useAuthStore();
 
-const isLoggedIn = ref(authStore.isLoggedIn);
+const isLoggedIn = computed(() => authStore.isLoggedIn);
+
+const loginCheck = () => authStore.signIn("test", "test1234");
 </script>
 
 <template>
@@ -14,15 +16,16 @@ const isLoggedIn = ref(authStore.isLoggedIn);
     <h1 class="font-sans font-bold text-text uppercase text-xl">Xpand</h1>
     <div v-if="!isLoggedIn" class="flex gap-3">
       <button
-        @click="authStore.signIn"
+        @click="loginCheck"
         class="px-4 text-black rounded-md bg-green-500 hover:bg-green-400 hover:transition-all hover:duration-500 py-1"
       >
         Sign In
       </button>
+      <button @click="authStore.checkAuth">check</button>
     </div>
-    <div v-else class="">
+    <div v-if="isLoggedIn" class="">
       <button
-        @click="isLoggedIn = false"
+        @click="authStore.signOut"
         class="px-4 text-black rounded-md bg-green-500 hover:bg-green-400 hover:transition-all hover:duration-500 py-1"
       >
         Sign Out

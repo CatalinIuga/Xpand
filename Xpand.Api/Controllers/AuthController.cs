@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetMe()
+    public async Task<ActionResult> GetInfo()
     {
         // Get the captain id from the token.
         // The token is validated by the [Authorize] attribute
@@ -80,13 +80,13 @@ public class AuthController : ControllerBase
 
         if (captain == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Captain not found." });
         }
 
         return Ok(new { Captain = captain });
     }
 
-    [HttpGet("signout")]
+    [HttpPost("signout")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult DeleteToken()

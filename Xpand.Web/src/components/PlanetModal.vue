@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Ref } from "vue";
+import { Ref, computed } from "vue";
+import { useAuthStore } from "../store/authstore";
 import { PlanetType } from "../types/types";
 import PlanetFrom from "./PlanetForm.vue";
 
@@ -10,6 +11,10 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const authStore = useAuthStore();
+
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 </script>
 <template>
   <div
@@ -25,7 +30,13 @@ defineProps<Props>();
       </button>
 
       <!-- Edit planet from -->
-      <PlanetFrom :planet="selectedPlanet" :closeForm="closeModal" />
+      <PlanetFrom
+        v-if="isLoggedIn"
+        :planet="selectedPlanet"
+        :closeForm="closeModal"
+      />
+
+      <p v-if="!isLoggedIn" class="text-center">Please login to edit planets</p>
     </div>
   </div>
 </template>
