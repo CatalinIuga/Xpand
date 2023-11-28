@@ -8,13 +8,13 @@ public class Team
     public string Name { get; set; } = null!;
     public int CaptainId { get; set; }
 
-    // public int? ShuttleId { get; set; }
+    public int? ShuttleId { get; set; }
 
     [JsonIgnore]
     public Captain Captain { get; set; } = null!;
 
-    // [JsonIgnore]
-    // public Shuttle? Shuttle { get; set; } = null;
+    [JsonIgnore]
+    public Shuttle? Shuttle { get; set; } = null;
 
     [JsonIgnore]
     public ICollection<Robot> Robots { get; set; } = new List<Robot>();

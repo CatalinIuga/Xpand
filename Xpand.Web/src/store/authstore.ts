@@ -30,33 +30,6 @@ export const useAuthStore = defineStore("auth", () => {
     captain.value = cap;
   };
 
-  // Methods -> signup is only goint to create the user, not log in
-  // The user will have to log in after signing up
-  const signIn = (name: string, password: string) => {
-    fetch("http://localhost:5015/api/auth/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: name, password: password }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        console.log(data);
-        if (data.token) {
-          setTokken(data.token);
-          setCaptain(data.captain);
-          isLoggedIn.value = true;
-        } else {
-          error.value = data.message;
-          console.log(error.value);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const signOut = async () => {
     localStorage.removeItem("token");
     fetch("http://localhost:5015/api/auth/signout", {
@@ -110,7 +83,7 @@ export const useAuthStore = defineStore("auth", () => {
     setTokken,
     setCaptain,
     signOut,
-    signIn,
     checkAuth,
+    error,
   };
 });

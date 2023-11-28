@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useAuthStore } from "../store/authstore";
+import AuthModal from "./AuthModal.vue";
 
 const authStore = useAuthStore();
 
 const isLoggedIn = computed(() => authStore.isLoggedIn);
 
-const loginCheck = () => authStore.signIn("test", "test1234");
+const isAuthModalOpen = ref(false);
+
+const closeModal = () => (isAuthModalOpen.value = false);
 </script>
 
 <template>
@@ -16,12 +19,11 @@ const loginCheck = () => authStore.signIn("test", "test1234");
     <h1 class="font-sans font-bold text-text uppercase text-xl">Xpand</h1>
     <div v-if="!isLoggedIn" class="flex gap-3">
       <button
-        @click="loginCheck"
+        @click="isAuthModalOpen = true"
         class="px-4 text-black rounded-md bg-green-500 hover:bg-green-400 hover:transition-all hover:duration-500 py-1"
       >
         Sign In
       </button>
-      <button @click="authStore.checkAuth">check</button>
     </div>
     <div v-if="isLoggedIn" class="">
       <button
@@ -32,4 +34,5 @@ const loginCheck = () => authStore.signIn("test", "test1234");
       </button>
     </div>
   </header>
+  <AuthModal :isModalOpen="isAuthModalOpen" :closeModal="closeModal" />
 </template>

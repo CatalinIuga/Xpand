@@ -44,9 +44,9 @@ public class PlanetsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Planet>> PostPlanet([FromForm] PlanetDto planet)
     {
+        // Saving the new image if it exists
         var planetImage = planet.Image;
         var planetImageName = Guid.NewGuid().ToString() + ".png";
-
         if (planetImage is null || planetImage.Length == 0)
             planetImageName = "default.png";
         else if (planetImage.Length > 0)
@@ -57,15 +57,24 @@ public class PlanetsController : ControllerBase
         else
             return BadRequest("Invalid file type");
 
-        // TODO: if the planet status is not TODO, initialize the team and robotCount,
-        // otherwise, reset them
         var pln = new Planet
         {
             Name = planet.Name,
             ImageName = planetImageName,
             Description = planet.Description,
-            Status = planet.Status
+            RobotsCount = planet.RobotsCount,
+            Status = planet.Status,
+            TeamId = planet.TeamId
         };
+
+        // Reset the planet if the status is TODO
+        // Probably a mistake from a captain's part
+        if (planet.Status == PlanetStatus.TODO)
+        {
+            planet.TeamId = null;
+            planet.Description = "No description yet :/";
+            planet.RobotsCount = 0;
+        }
 
         _context.Planets.Add(pln);
         await _context.SaveChangesAsync();
@@ -81,29 +90,52 @@ public class PlanetsController : ControllerBase
         if (planet is null)
             return NotFound();
 
+        // Saving the new image if it exists
         var planetImage = planetDto.Image;
         var planetImageName = Guid.NewGuid().ToString() + ".png";
-
         if (planetImage is null || planetImage.Length == 0)
             planetImageName = planet.ImageName;
         else if (planetImage.Length > 0)
         {
-            // Delete the old image, save the new one
+            // Delete the old imagee
             if (planet.ImageName != "default.png")
                 System.IO.File.Delete($"./Uploads/{planet.ImageName}");
 
+            // Save the new image
             await using var stream = new FileStream(
                 $"./Uploads/{planetImageName}",
                 FileMode.Create
             );
             await planetImage.CopyToAsync(stream);
         }
+        else
+            return BadRequest("Invalid file type");
 
+        // Dto to model
         planet.Name = planetDto.Name;
         planet.ImageName = planetImageName;
         planet.Description = planetDto.Description;
         planet.Status = planetDto.Status;
 
+        // Could definitely swap this for the count of robots in the team
+        planet.RobotsCount = planetDto.RobotsCount;
+
+        // Create the link between the planet and the team if specified
+        if (planetDto.TeamId is not null)
+            planet.TeamId = planetDto.TeamId.Value;
+        else
+            planet.TeamId = null;
+
+        // Reset the planet if the status is TODO
+        // Probably a mistake from a captain's part
+        if (planetDto.Status == PlanetStatus.TODO)
+        {
+            planet.TeamId = null;
+            planet.Description = "No description yet :/";
+            planet.RobotsCount = 0;
+        }
+
+        // Save changes to database
         _context.Entry(planet).State = EntityState.Modified;
 
         try

@@ -4,6 +4,6 @@ export type PlanetType = {
   imageName: string;
   description: string;
   status: string;
-  robotNumber: number;
+  robotsCount: number;
   teamId?: number;
 };

@@ -91,6 +91,8 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult DeleteToken()
     {
+        // Technically, we should add the token to a blacklist
+        // but for the sake of simplicity, we just remove it from the response.
         Response.Headers.Remove("Authorization");
         return Ok(new { message = "Signed out." });
     }

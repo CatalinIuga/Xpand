@@ -10,7 +10,7 @@ public class Planet
     public string Description { get; set; } = "No description yet :/";
     public PlanetStatus Status { get; set; } = PlanetStatus.TODO;
 
-    // Will get initialized when a captain modifies the planet status.
+    // Can be changed by a captain or automatically by the team's robot count.
     public int RobotsCount { get; set; } = 0;
 
     // The team realationship will get initialized when a captain
