@@ -40,6 +40,8 @@ public class PlanetsController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Planet>> PostPlanet([FromForm] PlanetDto planet)
     {
         var planetImage = planet.Image;
@@ -83,17 +85,21 @@ public class PlanetsController : ControllerBase
         var planetImageName = Guid.NewGuid().ToString() + ".png";
 
         if (planetImage is null || planetImage.Length == 0)
-            planetImageName = "default.png";
+            planetImageName = planet.ImageName;
         else if (planetImage.Length > 0)
-            await using (
-                var stream = new FileStream($"./Uploads/{planetImageName}", FileMode.Create)
-            )
-                await planetImage.CopyToAsync(stream);
-        else
-            return BadRequest("Invalid file type");
+        {
+            // Delete the old image, save the new one
+            if (planet.ImageName != "default.png")
+                System.IO.File.Delete($"./Uploads/{planet.ImageName}");
+
+            await using var stream = new FileStream(
+                $"./Uploads/{planetImageName}",
+                FileMode.Create
+            );
+            await planetImage.CopyToAsync(stream);
+        }
 
         planet.Name = planetDto.Name;
-        // TODO, delete the old image
         planet.ImageName = planetImageName;
         planet.Description = planetDto.Description;
         planet.Status = planetDto.Status;
@@ -109,7 +115,7 @@ public class PlanetsController : ControllerBase
             return NotFound();
         }
 
-        return NoContent();
+        return Ok(planet);
     }
 
     [HttpDelete("{id}")]
@@ -122,7 +128,11 @@ public class PlanetsController : ControllerBase
         }
 
         _context.Planets.Remove(planet);
+
         await _context.SaveChangesAsync();
+
+        if (planet.ImageName != "default.png")
+            System.IO.File.Delete($"./Uploads/{planet.ImageName}");
 
         return NoContent();
     }

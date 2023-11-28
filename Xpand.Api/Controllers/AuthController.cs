@@ -11,7 +11,7 @@ using Xpand.Api.Dto;
 namespace Xpand.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;

@@ -19,11 +19,13 @@ defineProps<Props>();
     <div class="bg-white relative shadow-md rounded-md p-8 w-96">
       <button
         @click="closeModal"
-        class="absolute bg-red-200 font-extrabold text-red-600 flex justify-center items-center h-7 w-7 top-2 right-2 rounded-md p-1"
+        class="absolute bg-red-200 font-extrabold text-2xl uppercase text-red-600 flex items-center justify-center h-6 w-6 pb-1 top-2 right-2 rounded-md"
       >
         &times;
       </button>
-      <PlanetFrom :planet="selectedPlanet" />
+
+      <!-- Edit planet from -->
+      <PlanetFrom :planet="selectedPlanet" :closeForm="closeModal" />
     </div>
   </div>
 </template>

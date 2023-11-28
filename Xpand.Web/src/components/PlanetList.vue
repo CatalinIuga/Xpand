@@ -26,7 +26,7 @@ const openModal = (planet: PlanetType) => {
 </script>
 
 <template>
-  <section class="flex-1 mt-20 w-full gap-2 overflow-y-auto p-2">
+  <section class="flex-1 mt-20 bg-gray-200 w-full gap-2 overflow-y-auto p-2">
     <button
       v-for="planet in planets"
       @click="openModal(planet)"

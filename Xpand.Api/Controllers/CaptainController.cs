@@ -8,7 +8,7 @@ using Xpand.Api.Models;
 namespace Xpand.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class CaptainsController : ControllerBase
 {
     private readonly XpandDbContext _context;
