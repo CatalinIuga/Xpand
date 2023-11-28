@@ -5,3 +5,7 @@
 *:root {
   @apply bg-gray-200;
 }
+
+#app {
+  @apply bg-gray-200 h-screen w-screen overflow-hidden;
+}

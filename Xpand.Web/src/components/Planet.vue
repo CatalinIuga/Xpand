@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type PlanetType } from "../../types/types.js";
+import { type PlanetType } from "../types/types.js";
 
 defineProps<{
   planet: PlanetType;
@@ -15,10 +15,9 @@ defineProps<{
     />
     <h3 class="text-center text-xl font-bold">{{ planet.name }}</h3>
   </div>
-  <div class="flex gap-1 flex-col">
-    <div class="line-clamp-2">
-      "{{ planet.description + planet.description }}"
-    </div>
+  <div v-if="!planet.teamId" class="">{{ planet.description }}</div>
+  <div v-else class="flex gap-1 flex-col">
+    <div class="line-clamp-2 text-left">"{{ planet.description }}"</div>
     <div class="text-xs flex gap-1">
       <span class="font-bold">by captain:</span>
       <p class="underline">Luke Skywalker</p>
@@ -26,7 +25,7 @@ defineProps<{
     <div class="flex gap-1 items-center text-sm py-1">
       <span class="font-bold text-sm">Robots: </span>
       <div
-        class="overflow-x-hidden text-ellipsis whitespace-nowrap max-w-[33%]"
+        class="overflow-x-hidden text-ellipsis whitespace-nowrap max-w-[200px]"
       >
         {{ ["T88", "R2D2", "T88", "R2D2"].map((r) => r).join(", ") }}
       </div>
@@ -39,4 +38,3 @@ defineProps<{
     {{ planet.status }}
   </div>
 </template>
-../../types/types

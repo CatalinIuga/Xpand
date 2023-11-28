@@ -11,7 +11,7 @@ const isLoggedIn = ref(false);
 
 <template>
   <header
-    class="bg-primary max-w-md w-full flex items-center justify-between p-4"
+    class="bg-primary flex p-4 fixed top-0 left-1/2 -translate-x-1/2 traslate max-w-md h-20 w-full justify-between items-center"
   >
     <h1 class="font-sans font-bold text-text uppercase text-xl">Xpand</h1>
     <div v-if="!isLoggedIn" class="flex gap-3">
