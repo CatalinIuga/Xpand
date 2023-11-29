@@ -24,6 +24,7 @@ public class PlanetsController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Planet>>> GetPlanets()
     {
         var planets = await _context.Planets.ToListAsync();
@@ -32,6 +33,8 @@ public class PlanetsController : ControllerBase
 
     [HttpGet("{id}")]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Planet>> GetPlanet(int id)
     {
         var planet = await _context.Planets.FindAsync(id);
@@ -65,6 +68,9 @@ public class PlanetsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PutPlanet(int id, [FromForm] PlanetDto planetDto)
     {
         try
@@ -84,6 +90,8 @@ public class PlanetsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePlanet(int id)
     {
         try
@@ -109,6 +117,7 @@ public class PlanetsController : ControllerBase
         }
     }
 
+    // Helpers
     private bool PlanetExists(int id)
     {
         return _context.Planets.Any(e => e.Id == id);
@@ -136,6 +145,7 @@ public class PlanetsController : ControllerBase
             throw new Exception("Planet not found");
         }
 
+        // The image is optional
         if (planetDto.Image != null)
         {
             var newImageName = Guid.NewGuid().ToString() + ".png";
@@ -144,6 +154,7 @@ public class PlanetsController : ControllerBase
             planet.ImageName = newImageName;
         }
 
+        // Gotta lean automapper :)
         planet.Name = planetDto.Name;
         planet.Description = planetDto.Description;
         planet.RobotsCount = planetDto.RobotsCount;

@@ -17,12 +17,15 @@ public class TeamsController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetTeams()
     {
         return Ok(await _context.Teams.ToListAsync());
     }
 
     [HttpGet("{id}/members")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetTeamCaptain(int id)

@@ -3,6 +3,8 @@
 - Xpand.Api - the backend of the project
 - Xpand.Web - the frontend of the project
 
+NOTE: The database is already seeded with an account, credentials are `Yoda` and `4213`. I didn't bother with hashing the passwords.
+
 ## Data modeling
 
 So on my first look, it looked like a really easy model to implement. But on closer inspection of the document, sceenshot and tasks, alot of modeleling idees came up, from which I choose the following:
@@ -29,9 +31,11 @@ For the sake of simplicity, I also chose that on a captain creation, the team, s
 
 ## Implementation
 
-For the backend I chose to use .Net 7, SQL Server and Entity Framework Core. For the frontend I chose to use Vue3 and Typescript. The authentication is done using JWT tokens. I didnt implement all the controllers, as I considered them to be quite simple and repetitive.
+For the backend I chose to use .Net 7, SQL Server and Entity Framework Core. For the frontend I chose to use Vue3 and Typescript. The authentication is done using JWT tokens. I didnt implement all the controllers, as I considered them to be quite simple and repetitive. Not the prettiest code or interface, but it's a valliant effort.
 
 For creating the project I used the Vite to create a new Vue3 project, to which I added Tailwind CSS and Pina for state management.
+
+For authentication, I choose to use a simple JWT strategy, no refresh tokens or blacklist, just a JWT that gets sent from the backend to the frontend where it gets saved in local storage. The JWT contains the captain's ID for validation, and if needed we could use this inside controllers for authorization. The JWT is sent in the Authorization header, as a Bearer token. NOTE: Swagger apparently supports JWT authentication, but it dosent add the Bearer prefix, so you need to add it manually.
 
 ## Running the project
 
@@ -99,8 +103,10 @@ Backend:
 - [x] Choose a storage solution that can handle persistence of the model -> SQL Server
 - [x] Implement a means to expose the model to the UI using a chosen protocol -> REST API
 
-Technicaly speaking, all the tasks are completed. Are
+Extra:
 
-Am I happy with the end result? Yeah, I think I tackled all the things I wanted in the time I had. Definetly code use some improvements, from models, to code structute (especially UI), but I think it's a good start.
+- [x] Implement a means to authenticate the user of the app -> JWT
+
+Am I happy with the end result? Yeah, I think I tackled all the things I wanted in the time I had. Definetly code use some improvements, from models, to code structute (especially UI), but I think it's a good start. Some stuff still needs changes, like the behavior of the database entities on delete, and the fact that the team references are not actually foreign keys (oops) but I'm happy with the current result.
 
 I had a lot of fun working on this project, and I hope you will enjoy it as well. Looking forward to your feedback! :)

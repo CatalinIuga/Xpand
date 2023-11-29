@@ -46,7 +46,7 @@ builder
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
                 Description =
-                    "WARNING! Add the Bearer Authorization string as following: `Bearer <generated-JWT-token>`. For testing, use the signin endpoint to get a token. Credentials: test / test.",
+                    "WARNING! Add the Bearer Authorization string as following: `Bearer <generated-JWT-token>`. For testing, use the signin endpoint to get a token. Credentials: Yoda / 4213.",
             }
         );
         options.AddSecurityRequirement(

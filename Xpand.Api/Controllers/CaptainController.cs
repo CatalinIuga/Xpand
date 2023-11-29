@@ -45,6 +45,7 @@ namespace Xpand.Api.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Captain>> PostCaptain(CaptainDto captainDto)
         {
             // Creating the captain
@@ -91,7 +92,6 @@ namespace Xpand.Api.Controllers
         [HttpPut("{id}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutCaptain(int id, CaptainDto captainDto)
         {
