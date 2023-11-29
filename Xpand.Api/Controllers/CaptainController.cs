@@ -47,10 +47,13 @@ namespace Xpand.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<Captain>> PostCaptain(CaptainDto captainDto)
         {
+            // Creating the captain
             var captain = CreateCaptainFromDto(captainDto);
 
-            _context.Captains.Add(captain);
+            await _context.Captains.AddAsync(captain);
+            await _context.SaveChangesAsync();
 
+            // Scaffold the captain's team, shuttle, and robots
             var team = new Team
             {
                 Captain = captain,
@@ -58,37 +61,25 @@ namespace Xpand.Api.Controllers
                 Name = $"{captain.Name}'s Team"
             };
 
-            _context.Teams.Add(team);
+            await _context.Teams.AddAsync(team);
+            await _context.SaveChangesAsync();
 
-            var shuttle = new Shuttle
-            {
-                Name = $"{captain.Name}'s Shuttle",
-                Team = team,
-                TeamId = team.Id
-            };
+            var shuttle = new Shuttle { Name = $"{captain.Name}'s Shuttle", Team = team };
 
-            _context.Shuttles.Add(shuttle);
+            await _context.Shuttles.AddAsync(shuttle);
+            await _context.SaveChangesAsync();
 
             team.Shuttle = shuttle;
             team.ShuttleId = shuttle.Id;
 
             var robots = new[]
             {
-                new Robot
-                {
-                    Name = "R2-D2",
-                    Team = team,
-                    TeamId = team.Id
-                },
-                new Robot
-                {
-                    Name = "C-3PO",
-                    Team = team,
-                    TeamId = team.Id
-                }
+                new Robot { Name = "R2-D2", Team = team },
+                new Robot { Name = "C-3PO", Team = team }
             };
 
-            _context.Robots.AddRange(robots);
+            await _context.Robots.AddRangeAsync(robots);
+            await _context.SaveChangesAsync();
 
             team.Robots = robots;
 
@@ -142,6 +133,7 @@ namespace Xpand.Api.Controllers
             return NoContent();
         }
 
+        // Helpers
         private bool CaptainExists(int id)
         {
             return _context.Captains.Any(e => e.Id == id);

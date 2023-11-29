@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Xpand.Api.Data;
 
@@ -11,9 +12,11 @@ using Xpand.Api.Data;
 namespace Xpand.Api.Migrations
 {
     [DbContext(typeof(XpandDbContext))]
-    partial class XpandDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231129083654_SeedingDb")]
+    partial class SeedingDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,8 +57,7 @@ namespace Xpand.Api.Migrations
                         {
                             Id = 1,
                             Name = "Yoda",
-                            Password = "4213",
-                            TeamId = 1
+                            Password = "4213"
                         });
                 });
 
@@ -277,8 +279,7 @@ namespace Xpand.Api.Migrations
                         {
                             Id = 1,
                             CaptainId = 1,
-                            Name = "Team Yoda's",
-                            ShuttleId = 1
+                            Name = "Team Yoda's"
                         });
                 });
 

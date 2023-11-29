@@ -43,7 +43,7 @@ Dependencies:
 - Microsoft.EntityFrameworkCore.Design
 - Microsoft.AspNetCore.Authentication.JwtBearer
 
-To run the API, you need to have SQL Server installed and running. The connection string is located in the `appsettings.json` file. The default is `Server=localhost;Database=Xpand;Trusted_Connection=True;`. You can change the connection string depending on your SQL Server configuration. You should create a new database, as Entity Framework will create the tables for you.
+To run the API, you need to have SQL Server installed and running. The connection string is located in the `appsettings.json` file. The default is `Server=localhost;Database=Xpand;Trusted_Connection=True;`. You can change the connection string depending on your SQL Server configuration. You should create a new database, as Entity Framework will create the tables for you. Also please make sure the user has the required permissions. I gave the captain user sysadmin permissions for my local SQL Server.
 
 To run the API, you need to run the following commands in the `Xpand.Api` folder:
 

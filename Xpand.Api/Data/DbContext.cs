@@ -55,7 +55,19 @@ public class XpandDbContext : DbContext
 
         modelBuilder.Entity<Planet>().Property(p => p.Status).HasConversion<string>();
 
-        modelBuilder.Entity<Captain>().HasData(new Captain { Id = 1, });
+        // Database seeding
+
+        modelBuilder
+            .Entity<Captain>()
+            .HasData(
+                new Captain
+                {
+                    Id = 1,
+                    Name = "Yoda",
+                    Password = "4213",
+                    TeamId = 1
+                }
+            );
 
         modelBuilder
             .Entity<Team>()
@@ -64,15 +76,106 @@ public class XpandDbContext : DbContext
                 {
                     Id = 1,
                     CaptainId = 1,
-                    Name = "Lambda"
+                    Name = "Team Yoda's",
+                    ShuttleId = 1
                 }
             );
 
-        modelBuilder.Entity<Planet>().HasData(new Planet { Id = 1, TeamId = 1, });
+        modelBuilder
+            .Entity<Planet>()
+            .HasData(
+                new Planet
+                {
+                    Id = 1,
+                    Name = "Earth",
+                    Status = PlanetStatus.OK,
+                    TeamId = 1,
+                    Description = "On this planet we live.",
+                    ImageName = "earth.png",
+                    RobotsCount = 2
+                },
+                new Planet
+                {
+                    Id = 2,
+                    Name = "Mars",
+                    Status = PlanetStatus.OK,
+                    Description = "This one planet we can live.",
+                    TeamId = 1,
+                    ImageName = "mars.png",
+                    RobotsCount = 2
+                },
+                new Planet
+                {
+                    Id = 3,
+                    Name = "Jupiter",
+                    Status = PlanetStatus.TODO,
+                    ImageName = "jupiter.png",
+                },
+                new Planet
+                {
+                    Id = 4,
+                    Name = "Saturn",
+                    Status = PlanetStatus.NotOK,
+                    ImageName = "saturn.png",
+                    TeamId = 1,
+                    Description = "This one planet we can't live.",
+                    RobotsCount = 2
+                },
+                new Planet
+                {
+                    Id = 5,
+                    Name = "Uranus",
+                    Status = PlanetStatus.TODO,
+                    ImageName = "uranus.png",
+                },
+                new Planet
+                {
+                    Id = 6,
+                    Name = "Neptune",
+                    Status = PlanetStatus.TODO,
+                    ImageName = "neptune.png",
+                },
+                new Planet
+                {
+                    Id = 7,
+                    Name = "Pluto",
+                    Status = PlanetStatus.TODO,
+                    ImageName = "pluto.png",
+                },
+                new Planet
+                {
+                    Id = 8,
+                    Name = "Mercury",
+                    Status = PlanetStatus.TODO,
+                    ImageName = "mercury.png",
+                },
+                new Planet
+                {
+                    Id = 9,
+                    Name = "Venus",
+                    Status = PlanetStatus.TODO,
+                    ImageName = "venus.png",
+                }
+            );
 
-        modelBuilder.Entity<Robot>().HasData(new Robot { Id = 1, TeamId = 1, });
+        modelBuilder
+            .Entity<Robot>()
+            .HasData(
+                new Robot
+                {
+                    Id = 1,
+                    Name = "R2D2",
+                    TeamId = 1
+                },
+                new Robot
+                {
+                    Id = 2,
+                    Name = "C3PO",
+                    TeamId = 1
+                }
+            );
 
-        // modelBuilder.Entity<Shuttle>().HasData(new Shuttle { Id = 1, TeamId = 1, });
+        modelBuilder.Entity<Shuttle>().HasData(new Shuttle { Id = 1, TeamId = 1, });
     }
 
     public DbSet<Captain> Captains { get; set; }
