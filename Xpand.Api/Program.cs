@@ -6,13 +6,16 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Xpand.Api.Data;
+using Xpand.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
-// I love cors. :D
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<FileService>();
 
+// I love cors. :D
 builder
     .Services
     .AddCors(options =>

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Xpand.Api.Data;
 using Xpand.Api.Dto;
 using Xpand.Api.Models;
+using Xpand.Api.Services;
 
 namespace Xpand.Api.Controllers;
 
@@ -12,17 +14,20 @@ namespace Xpand.Api.Controllers;
 public class PlanetsController : ControllerBase
 {
     private readonly XpandDbContext _context;
+    private readonly FileService _fileService;
 
-    public PlanetsController(XpandDbContext context)
+    public PlanetsController(XpandDbContext context, FileService fileService)
     {
         _context = context;
+        _fileService = fileService;
     }
 
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<Planet>>> GetPlanets()
     {
-        return await _context.Planets.ToListAsync();
+        var planets = await _context.Planets.ToListAsync();
+        return Ok(planets);
     }
 
     [HttpGet("{id}")]
@@ -42,135 +47,109 @@ public class PlanetsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Planet>> PostPlanet([FromForm] PlanetDto planet)
+    public async Task<ActionResult<Planet>> PostPlanet([FromForm] PlanetDto planetDto)
     {
-        // Saving the new image if it exists
-        var planetImage = planet.Image;
-        var planetImageName = Guid.NewGuid().ToString() + ".png";
-        if (planetImage is null || planetImage.Length == 0)
-            planetImageName = "default.png";
-        else if (planetImage.Length > 0)
-            await using (
-                var stream = new FileStream($"./Uploads/{planetImageName}", FileMode.Create)
-            )
-                await planetImage.CopyToAsync(stream);
-        else
-            return BadRequest("Invalid file type");
-
-        var pln = new Planet
+        try
         {
-            Name = planet.Name,
-            ImageName = planetImageName,
-            Description = planet.Description,
-            RobotsCount = planet.RobotsCount,
-            Status = planet.Status,
-            TeamId = planet.TeamId
-        };
+            var planet = CreatePlanetFromDto(planetDto);
+            await _fileService.SaveFileAsync(planetDto.Image, planet.ImageName);
+            _context.Planets.Add(planet);
+            await _context.SaveChangesAsync();
 
-        // Reset the planet if the status is TODO
-        // Probably a mistake from a captain's part
-        if (planet.Status == PlanetStatus.TODO)
-        {
-            planet.TeamId = null;
-            planet.Description = "No description yet :/";
-            planet.RobotsCount = 0;
+            return CreatedAtAction(nameof(GetPlanet), new { id = planet.Id }, planet);
         }
-
-        _context.Planets.Add(pln);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetPlanet", new { id = pln.Id }, pln);
+        catch (Exception ex)
+        {
+            return BadRequest($"Error creating planet: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutPlanet(int id, [FromForm] PlanetDto planetDto)
     {
-        var planet = await _context.Planets.FindAsync(id);
-
-        if (planet is null)
-            return NotFound();
-
-        // Saving the new image if it exists
-        var planetImage = planetDto.Image;
-        var planetImageName = Guid.NewGuid().ToString() + ".png";
-        if (planetImage is null || planetImage.Length == 0)
-            planetImageName = planet.ImageName;
-        else if (planetImage.Length > 0)
-        {
-            // Delete the old imagee
-            if (planet.ImageName != "default.png")
-                System.IO.File.Delete($"./Uploads/{planet.ImageName}");
-
-            // Save the new image
-            await using var stream = new FileStream(
-                $"./Uploads/{planetImageName}",
-                FileMode.Create
-            );
-            await planetImage.CopyToAsync(stream);
-        }
-        else
-            return BadRequest("Invalid file type");
-
-        // Dto to model
-        planet.Name = planetDto.Name;
-        planet.ImageName = planetImageName;
-        planet.Description = planetDto.Description;
-        planet.Status = planetDto.Status;
-
-        // Could definitely swap this for the count of robots in the team
-        planet.RobotsCount = planetDto.RobotsCount;
-
-        // Create the link between the planet and the team if specified
-        if (planetDto.TeamId is not null)
-            planet.TeamId = planetDto.TeamId.Value;
-        else
-            planet.TeamId = null;
-
-        // Reset the planet if the status is TODO
-        // Probably a mistake from a captain's part
-        if (planetDto.Status == PlanetStatus.TODO)
-        {
-            planet.TeamId = null;
-            planet.Description = "No description yet :/";
-            planet.RobotsCount = 0;
-        }
-
-        // Save changes to database
-        _context.Entry(planet).State = EntityState.Modified;
-
         try
         {
+            var planet = await UpdatePlanetFromDtoAsync(id, planetDto);
             await _context.SaveChangesAsync();
+            return Ok(planet);
         }
         catch (DbUpdateConcurrencyException) when (!PlanetExists(id))
         {
             return NotFound();
         }
-
-        return Ok(planet);
+        catch (Exception ex)
+        {
+            return BadRequest($"Error updating planet: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePlanet(int id)
     {
-        var planet = await _context.Planets.FindAsync(id);
-        if (planet == null)
+        try
         {
-            return NotFound();
+            var planet = await _context.Planets.FindAsync(id);
+
+            if (planet == null)
+            {
+                return NotFound();
+            }
+
+            _context.Planets.Remove(planet);
+
+            await _context.SaveChangesAsync();
+
+            _fileService.DeleteFile(planet.ImageName);
+
+            return NoContent();
         }
-
-        _context.Planets.Remove(planet);
-
-        await _context.SaveChangesAsync();
-
-        if (planet.ImageName != "default.png")
-            System.IO.File.Delete($"./Uploads/{planet.ImageName}");
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            return BadRequest($"Error deleting planet: {ex.Message}");
+        }
     }
 
     private bool PlanetExists(int id)
     {
         return _context.Planets.Any(e => e.Id == id);
+    }
+
+    private Planet CreatePlanetFromDto(PlanetDto planetDto)
+    {
+        return new Planet
+        {
+            Name = planetDto.Name,
+            ImageName = Guid.NewGuid().ToString() + ".png",
+            Description = planetDto.Description,
+            RobotsCount = planetDto.RobotsCount,
+            Status = planetDto.Status,
+            TeamId = planetDto.TeamId
+        };
+    }
+
+    private async Task<Planet> UpdatePlanetFromDtoAsync(int id, PlanetDto planetDto)
+    {
+        var planet = await _context.Planets.FindAsync(id);
+
+        if (planet == null)
+        {
+            throw new Exception("Planet not found");
+        }
+
+        if (planetDto.Image != null)
+        {
+            var newImageName = Guid.NewGuid().ToString() + ".png";
+            _fileService.DeleteFile(planet.ImageName);
+            await _fileService.SaveFileAsync(planetDto.Image, newImageName);
+            planet.ImageName = newImageName;
+        }
+
+        planet.Name = planetDto.Name;
+        planet.Description = planetDto.Description;
+        planet.RobotsCount = planetDto.RobotsCount;
+        planet.Status = planetDto.Status;
+        planet.TeamId = planetDto.TeamId;
+
+        return planet;
     }
 }

@@ -30,21 +30,28 @@ public class XpandDbContext : DbContext
             .HasOne(p => p.Team)
             .WithMany(t => t.Planets)
             .HasForeignKey(p => p.TeamId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder
             .Entity<Robot>()
             .HasOne(r => r.Team)
             .WithMany(t => t.Robots)
             .HasForeignKey(r => r.TeamId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder
             .Entity<Team>()
             .HasOne(s => s.Shuttle)
             .WithOne(t => t.Team)
             .HasForeignKey<Team>(t => t.ShuttleId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Shuttle>()
+            .HasOne(s => s.Team)
+            .WithOne(t => t.Shuttle)
+            .HasForeignKey<Shuttle>(s => s.TeamId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Planet>().Property(p => p.Status).HasConversion<string>();
 
